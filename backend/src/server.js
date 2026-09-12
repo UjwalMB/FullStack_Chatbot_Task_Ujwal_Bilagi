@@ -25,7 +25,6 @@ app.use(
     origin: allowedOrigins,
   })
 );
-
 // Limit repeated requests
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
