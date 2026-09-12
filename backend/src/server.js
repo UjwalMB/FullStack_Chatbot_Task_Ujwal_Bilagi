@@ -8,18 +8,21 @@ const pool = require("./db/connection");
 const enquiryRoutes = require("./routes/enquiryRoutes");
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 
 // Security headers
 app.use(helmet());
 
 // Allow requests from frontend
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://full-stack-chatbot-task-ujwal-bilag.vercel.app",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-    ],
+    origin: allowedOrigins,
   })
 );
 
