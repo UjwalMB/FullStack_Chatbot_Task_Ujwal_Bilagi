@@ -19,16 +19,29 @@ const initialForm: FormData = {
   message: "",
 };
 
-function EnquiryForm() {
-  const [formData, setFormData] = useState<FormData>(initialForm);
-  const [errors, setErrors] = useState<Partial<FormData>>({});
-  const [success, setSuccess] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const API_URL = `${import.meta.env.VITE_API_URL}/api/enquiries`;
 
-  // Handle input changes
+function EnquiryForm() {
+  const [formData, setFormData] =
+    useState<FormData>(initialForm);
+
+  const [errors, setErrors] =
+    useState<Partial<FormData>>({});
+
+  const [success, setSuccess] = useState("");
+
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
+
+  // ==========================================
+  // HANDLE INPUT CHANGES
+  // ==========================================
+
   const handleChange = (
     event: ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      HTMLInputElement |
+        HTMLSelectElement |
+        HTMLTextAreaElement
     >
   ) => {
     const { name, value } = event.target;
@@ -46,44 +59,64 @@ function EnquiryForm() {
     setSuccess("");
   };
 
-  // Validate form
+  // ==========================================
+  // VALIDATE FORM
+  // ==========================================
+
   const validate = () => {
     const newErrors: Partial<FormData> = {};
 
-    // Name validation
+    // Name
     if (!formData.name.trim()) {
       newErrors.name = "Name is required";
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
     }
 
-    // Email validation
+    // Email
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+        formData.email
+      )
     ) {
-      newErrors.email = "Enter a valid email address";
+      newErrors.email =
+        "Enter a valid email address";
     }
 
-    // Phone validation
+    // Phone
     if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    } else if (!/^[0-9]{10}$/.test(formData.phone)) {
-      newErrors.phone = "Enter a valid 10-digit phone number";
+      newErrors.phone =
+        "Phone number is required";
+    } else if (
+      !/^[0-9]{10}$/.test(formData.phone)
+    ) {
+      newErrors.phone =
+        "Enter a valid 10-digit phone number";
     }
 
-    // User type validation
+    // User type
     if (!formData.userType) {
-      newErrors.userType = "Please select a user type";
+      newErrors.userType =
+        "Please select a user type";
     }
 
-    // Interest validation
+    // Interest
     if (!formData.interest) {
-      newErrors.interest = "Please select your interest";
+      newErrors.interest =
+        "Please select your interest";
     }
 
-    // Message validation
+    // Message
     if (!formData.message.trim()) {
-      newErrors.message = "Message is required";
+      newErrors.message =
+        "Message is required";
+    } else if (
+      formData.message.trim().length < 10
+    ) {
+      newErrors.message =
+        "Message must be at least 10 characters";
     }
 
     setErrors(newErrors);
@@ -91,8 +124,13 @@ function EnquiryForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Submit form to backend
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  // ==========================================
+  // SUBMIT FORM
+  // ==========================================
+
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
 
     const isValid = validate();
@@ -106,22 +144,29 @@ function EnquiryForm() {
     setSuccess("");
 
     try {
-      const response = await fetch(
-        "http://localhost:5001/api/enquiries",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(API_URL, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          userType: formData.userType,
+          interest: formData.interest,
+          message: formData.message.trim(),
+        }),
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Failed to submit enquiry"
+          data.message ||
+            "Failed to submit enquiry"
         );
       }
 
@@ -132,7 +177,10 @@ function EnquiryForm() {
       setFormData(initialForm);
       setErrors({});
     } catch (error) {
-      console.error("Enquiry submission error:", error);
+      console.error(
+        "Enquiry submission error:",
+        error
+      );
 
       setSuccess(
         "Unable to submit your enquiry. Please try again."
@@ -142,28 +190,42 @@ function EnquiryForm() {
     }
   };
 
+  // ==========================================
+  // UI
+  // ==========================================
+
   return (
-    <section className="enquiry-section" id="contact">
+    <section
+      className="enquiry-section"
+      id="contact"
+    >
       <div className="enquiry-container">
 
-        {/* Left Side */}
+        {/* LEFT SIDE */}
+
         <div className="enquiry-info">
+
           <span>GET IN TOUCH</span>
 
           <h2>Have a question?</h2>
 
           <p>
-            Tell us what you're looking for and our team will
-            get back to you with the right information.
+            Tell us what you're looking for and
+            our team will get back to you with
+            the right information.
           </p>
 
           <div className="contact-points">
 
             <div>
-              <div className="contact-icon">💬</div>
+              <div className="contact-icon">
+                💬
+              </div>
 
               <div>
-                <strong>Quick Support</strong>
+                <strong>
+                  Quick Support
+                </strong>
 
                 <p>
                   Get answers to your questions.
@@ -172,10 +234,14 @@ function EnquiryForm() {
             </div>
 
             <div>
-              <div className="contact-icon">🎓</div>
+              <div className="contact-icon">
+                🎓
+              </div>
 
               <div>
-                <strong>Training Enquiries</strong>
+                <strong>
+                  Training Enquiries
+                </strong>
 
                 <p>
                   Ask about our drone courses.
@@ -184,10 +250,14 @@ function EnquiryForm() {
             </div>
 
             <div>
-              <div className="contact-icon">🚁</div>
+              <div className="contact-icon">
+                🚁
+              </div>
 
               <div>
-                <strong>Drone Services</strong>
+                <strong>
+                  Drone Services
+                </strong>
 
                 <p>
                   Tell us about your project.
@@ -198,16 +268,19 @@ function EnquiryForm() {
           </div>
         </div>
 
-        {/* Form */}
+        {/* FORM */}
+
         <form
           className="enquiry-form"
           onSubmit={handleSubmit}
         >
 
-          {/* Name + Email */}
+          {/* NAME + EMAIL */}
+
           <div className="form-row">
 
             <div className="form-group">
+
               <label htmlFor="name">
                 Name *
               </label>
@@ -226,9 +299,11 @@ function EnquiryForm() {
                   {errors.name}
                 </small>
               )}
+
             </div>
 
             <div className="form-group">
+
               <label htmlFor="email">
                 Email *
               </label>
@@ -247,14 +322,17 @@ function EnquiryForm() {
                   {errors.email}
                 </small>
               )}
+
             </div>
 
           </div>
 
-          {/* Phone + User Type */}
+          {/* PHONE + USER TYPE */}
+
           <div className="form-row">
 
             <div className="form-group">
+
               <label htmlFor="phone">
                 Phone *
               </label>
@@ -263,6 +341,8 @@ function EnquiryForm() {
                 id="phone"
                 name="phone"
                 type="tel"
+                inputMode="numeric"
+                maxLength={10}
                 placeholder="10-digit phone number"
                 value={formData.phone}
                 onChange={handleChange}
@@ -273,9 +353,11 @@ function EnquiryForm() {
                   {errors.phone}
                 </small>
               )}
+
             </div>
 
             <div className="form-group">
+
               <label htmlFor="userType">
                 User Type *
               </label>
@@ -286,6 +368,7 @@ function EnquiryForm() {
                 value={formData.userType}
                 onChange={handleChange}
               >
+
                 <option value="">
                   Select type
                 </option>
@@ -301,6 +384,7 @@ function EnquiryForm() {
                 <option value="Other">
                   Other
                 </option>
+
               </select>
 
               {errors.userType && (
@@ -308,12 +392,15 @@ function EnquiryForm() {
                   {errors.userType}
                 </small>
               )}
+
             </div>
 
           </div>
 
-          {/* Interest */}
+          {/* INTEREST */}
+
           <div className="form-group">
+
             <label htmlFor="interest">
               Service / Course of Interest *
             </label>
@@ -324,6 +411,7 @@ function EnquiryForm() {
               value={formData.interest}
               onChange={handleChange}
             >
+
               <option value="">
                 Select an option
               </option>
@@ -355,6 +443,7 @@ function EnquiryForm() {
               <option value="Other">
                 Other
               </option>
+
             </select>
 
             {errors.interest && (
@@ -362,10 +451,13 @@ function EnquiryForm() {
                 {errors.interest}
               </small>
             )}
+
           </div>
 
-          {/* Message */}
+          {/* MESSAGE */}
+
           <div className="form-group">
+
             <label htmlFor="message">
               Message *
             </label>
@@ -384,16 +476,19 @@ function EnquiryForm() {
                 {errors.message}
               </small>
             )}
+
           </div>
 
-          {/* Success Message */}
+          {/* SUCCESS */}
+
           {success && (
             <div className="success-message">
               ✓ {success}
             </div>
           )}
 
-          {/* Submit */}
+          {/* SUBMIT */}
+
           <button
             type="submit"
             className="submit-button"
